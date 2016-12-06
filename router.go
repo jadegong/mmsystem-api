@@ -28,6 +28,7 @@ func initRouter() *echo.Echo {
 	user.Use(middleware.JWTWithConfig(middleware.JWTConfig{
 		Claims:     &handler.JwtCustomClaims{},
 		SigningKey: []byte("secret"),
+		//TokenLookup: echo.HeaderAuthorization + ":Token",
 	}))
 	user.POST("", handler.CreateUser) //data-json: name, email
 	user.GET("/:id", handler.GetUser)

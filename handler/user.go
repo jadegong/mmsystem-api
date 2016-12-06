@@ -30,6 +30,7 @@ func GetUsers(c echo.Context) error {
 
 //Must use application/json
 func CreateUser(c echo.Context) error {
+	fmt.Printf("The header token: %s", c.Request().Header.Get("Authorization"))
 	u := &model.User{
 		Id: seq,
 	}
@@ -106,7 +107,7 @@ func AdminLogin(c echo.Context) error {
 			username,
 			password,
 			jwt.StandardClaims{
-				ExpiresAt: time.Now().Add(2 * time.Minute).Unix(),
+				ExpiresAt: time.Now().Add(10 * time.Minute).Unix(),
 			},
 		}
 		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
