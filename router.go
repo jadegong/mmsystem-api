@@ -1,9 +1,9 @@
 package main
 
 import (
-	"dj/echo.demo/handler"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+	"jadegong/echo.demo/handler"
 )
 
 func initRouter() *echo.Echo {
