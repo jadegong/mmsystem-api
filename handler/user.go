@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"dj/echo.demo/model"
+	"jadegong/echo.demo/model"
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
 )

@@ -1,22 +1,25 @@
 package main
 
 import (
-	"dj/echo.demo/handler"
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
+	"jadegong/echo.demo/handler"
+	"jadegong/echo.demo/libs/middleware/xPoweredByMiddleware"
 )
 
 func initRouter() *echo.Echo {
 	e := echo.New()
-	//todo middlewares
+	//todo middleware: token authorization
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(middleware.Gzip())
+	e.Use(xPoweredByMiddleware.XPoweredByMiddleware)
 
 	//Allow cross origin
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
-		AllowHeaders: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
+		AllowHeaders: []string{echo.HeaderAcceptEncoding, echo.HeaderAuthorization, echo.HeaderContentType, echo.HeaderOrigin},
+		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
 	}))
 
 	e.GET("/stream", handler.GetStreamResponse) //Streaming response
@@ -28,7 +31,6 @@ func initRouter() *echo.Echo {
 	user.Use(middleware.JWTWithConfig(middleware.JWTConfig{
 		Claims:     &handler.JwtCustomClaims{},
 		SigningKey: []byte("secret"),
-		//TokenLookup: echo.HeaderAuthorization + ":Token",
 	}))
 	user.POST("", handler.CreateUser) //data-json: name, email
 	user.GET("/:id", handler.GetUser)
