@@ -1,2 +1,2 @@
-# echo.demo
-learning echo —— framework of golang
+# material-management-system api
+Api for material management system.
