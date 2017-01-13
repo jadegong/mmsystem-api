@@ -3,8 +3,8 @@ package main
 import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
-	"jadegong/echo.demo/handler"
-	"jadegong/echo.demo/libs/middleware/xPoweredByMiddleware"
+	"jadegong/api.mmsystem.com/handler"
+	"jadegong/api.mmsystem.com/libs/middleware/xPoweredByMiddleware"
 )
 
 func initRouter() *echo.Echo {

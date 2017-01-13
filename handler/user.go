@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"time"
 
-	"jadegong/echo.demo/model"
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
+	"jadegong/api.mmsystem.com/model"
 )
 
 type JwtCustomClaims struct {
