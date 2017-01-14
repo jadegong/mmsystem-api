@@ -22,9 +22,9 @@ _testmain.go
 *.exe
 *.test
 *.prof
-echo.demo
 *.swp
 .idea/*
 *.iml
+.DS_Store
 api.mmsystem.com
-api.mmsystem.com.exe
+
