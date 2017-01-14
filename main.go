@@ -11,6 +11,7 @@ import (
 )
 
 func main() {
+	//Initialize
 	g.InitGlobal()
 
 	defer func() {
