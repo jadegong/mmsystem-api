@@ -4,8 +4,7 @@ import (
 	"github.com/labstack/echo"
 	"github.com/labstack/echo/middleware"
 	"jadegong/api.mmsystem.com/handler"
-	"jadegong/api.mmsystem.com/libs/middleware/tokenAuthMiddleware"
-	"jadegong/api.mmsystem.com/libs/middleware/xPoweredByMiddleware"
+	customMiddleware "jadegong/api.mmsystem.com/middleware"
 )
 
 func initRouter() *echo.Echo {
@@ -13,7 +12,7 @@ func initRouter() *echo.Echo {
 	//e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 	e.Use(middleware.Gzip())
-	e.Use(xPoweredByMiddleware.XPoweredByMiddleware)
+	e.Use(customMiddleware.XPoweredByMiddleware())
 
 	//Allow cross origin
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
@@ -22,16 +21,18 @@ func initRouter() *echo.Echo {
 		AllowMethods: []string{echo.GET, echo.PUT, echo.POST, echo.DELETE},
 	}))
 
+	//Content-Type: application/json, charset: UTF-8
+	e.Use(customMiddleware.ContentTypeCheckerMiddleware())
+
 	//token authorization
 	e.Use(middleware.JWTWithConfig(middleware.JWTConfig{
-		Skipper:    tokenAuthMiddleware.TokenAuthSkipper,
+		Skipper:    customMiddleware.TokenAuthSkipper,
 		Claims:     &handler.JwtCustomClaims{},
 		SigningKey: []byte("secret"),
 		AuthScheme: "Token",
 	}))
 
-	e.GET("/stream", handler.GetStreamResponse) //Streaming response
-	e.POST("/login", handler.AdminLogin)        //Admin login: form (name, email)
+	e.POST("/login", handler.AdminLogin) //Admin login: form (name, email)
 	e.GET("/users", handler.GetUsers)
 
 	//User api group
