@@ -9,5 +9,5 @@ var (
 )
 
 func TokenAuthSkipper(c echo.Context) bool {
-	return false
+	return true
 }
