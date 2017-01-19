@@ -27,8 +27,8 @@ type Config struct {
 	XSendFile        bool          `goconf:"base:http.sendfile"`
 	//Cache            string        `goconf:"base:cache"`
 	//Storage	string	`goconf:"base.storage"`
-	StoragePath      string        `goconf:"base:storage.path"`
-	StorageThumbPath string        `goconf:"base:storage.thumb.path"`
+	StoragePath      string `goconf:"base:storage.path"`
+	StorageThumbPath string `goconf:"base:storage.thumb.path"`
 	//TokenDuration    time.Duration `goconf:"base:token.duration:time"`
 
 	//db
@@ -48,6 +48,10 @@ type Config struct {
 	LogFilePrefix string `goconf:"log:file.prefix"`
 	LogMongodbUrl string `goconf:"log:mongodb.url"`
 	LogMongodbDB  string `goconf:"log:mongodb.db"`
+
+	//root user
+	RootName     string `goconf:"root:name"`
+	RootPassword string `goconf:"root:password"`
 }
 
 func newConfig() *Config {
@@ -59,20 +63,21 @@ func newConfig() *Config {
 		HTTPReadTimeout:  5 * time.Second,
 		HTTPWriteTimeout: 5 * time.Second,
 		XSendFile:        true,
-		//Cache:            "redis",
+		//
 		StoragePath:      "/data/mmsystem/files",
 		StorageThumbPath: "/data/mmsystem/thumbs",
-		//TokenDuration:    2 * time.Hour,
-		DBUrl:            "mongodb://127.0.0.1:27017",
-		DBName:           "mmsystem",
-		DBTimeout:        3 * time.Second,
-		//RedisUrl:         "127.0.0.1:6379",
-		//RedisPassword:    "",
-		LogEngine:        "mongodb",
-		LogFilePath:      "/data/mmsystem/log",
-		LogFilePrefix:    "mmsystem",
-		LogMongodbUrl:    "mongodb://127.0.0.1:27017",
-		LogMongodbDB:     "mmsystem_log",
+		//
+		DBUrl:     "mongodb://127.0.0.1:27017",
+		DBName:    "mmsystem",
+		DBTimeout: 3 * time.Second,
+		//
+		LogEngine:     "mongodb",
+		LogFilePath:   "/data/mmsystem/log",
+		LogFilePrefix: "mmsystem",
+		LogMongodbUrl: "mongodb://127.0.0.1:27017",
+		LogMongodbDB:  "mmsystem_log",
+		RootName:      "root@mmsystem.com",
+		RootPassword:  "root@mmsystem",
 	}
 }
 

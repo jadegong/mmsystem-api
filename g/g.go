@@ -24,10 +24,22 @@ func InitGlobal() {
 	}
 	logrus.Infof("Service Version: %s(%s)", VERSION, Conf.Mode)
 
+	// Set runtime procs
 	runtime.GOMAXPROCS(Conf.MaxProc)
+
+	// Initialize log
+	initLogger()
 
 	//Initialize database
 	initDB()
+
+	//Initialize storage
+	initStorage()
+
+	//TODO Initialize rpcclient
+
+	//Initialize root user
+	initRoot()
 
 	TempDir = os.TempDir()
 	logrus.Infof("Temp file directory: %s", TempDir)
