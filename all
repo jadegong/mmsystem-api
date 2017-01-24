@@ -3,7 +3,6 @@ package g
 import (
 	"github.com/Sirupsen/logrus"
 	"github.com/kless/osutil/user/crypt/sha512_crypt"
-	"jadegong/api.mmsystem.com/model"
 )
 
 func initRoot() {

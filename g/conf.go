@@ -50,7 +50,7 @@ type Config struct {
 	LogMongodbDB  string `goconf:"log:mongodb.db"`
 
 	//root user
-	RootName     string `goconf:"root:name"`
+	RootEmail    string `goconf:"root:email"`
 	RootPassword string `goconf:"root:password"`
 }
 
@@ -76,7 +76,7 @@ func newConfig() *Config {
 		LogFilePrefix: "mmsystem",
 		LogMongodbUrl: "mongodb://127.0.0.1:27017",
 		LogMongodbDB:  "mmsystem_log",
-		RootName:      "root@mmsystem.com",
+		RootEmail:     "root@mmsystem.com",
 		RootPassword:  "root@mmsystem",
 	}
 }

@@ -15,7 +15,7 @@ type ContentTypeCheckerConfig struct {
 
 var (
 	NoneJsonUrls map[string][]string = map[string][]string{
-		"ALL": {""},
+		"ALL": []string{"/upload", "/download", "/thumb"}, //Requests with file
 	}
 	DefaultContentTypeCheckerConfig ContentTypeCheckerConfig = ContentTypeCheckerConfig{
 		Skipper: contentTypeCheckerSkipper,
@@ -23,8 +23,16 @@ var (
 )
 
 func contentTypeCheckerSkipper(c echo.Context) bool {
-	//todo
-	return false
+	ret := false
+	if len(NoneJsonUrls["ALL"]) > 0 || len(NoneJsonUrls[c.Request().Method]) > 0 {
+		urls := append(NoneJsonUrls["ALL"], NoneJsonUrls[c.Request().Method]...)
+		for _, url := range urls {
+			if strings.Contains(c.Request().URL.Path, url)
+			ret = true
+			break
+		}
+	}
+	return ret
 }
 
 func ContentTypeCheckerMiddleware() echo.MiddlewareFunc {
