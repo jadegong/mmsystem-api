@@ -19,6 +19,8 @@ const (
 	LOCAL_TIME_ZONE_OFFSET = 8 * 60 * 60 //Beijing(UTC+8:00)
 
 	DEFAULT_FILE_MODE = 0755
+
+	USER = "user"
 )
 
 //todo log type

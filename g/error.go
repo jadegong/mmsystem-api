@@ -1,5 +1,7 @@
 package g
 
+import "net/http"
+
 const (
 	SUCCESS = 200
 
@@ -68,4 +70,13 @@ func GetErrMsg(errCode int) string {
 		msg = "未知错误"
 	}
 	return msg
+}
+
+func GetErrHttpStatus(errCode int) int {
+	switch errCode {
+	case ERR_RPC_FAILED, ERR_DB_FAILED:
+		return http.StatusInternalServerError
+	default:
+		return http.StatusBadRequest
+	}
 }

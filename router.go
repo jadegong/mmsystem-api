@@ -28,7 +28,7 @@ func initRouter() *echo.Echo {
 	e.Use(middleware.JWTWithConfig(middleware.JWTConfig{
 		Skipper:    customMiddleware.TokenAuthSkipper,
 		Claims:     &handler.JwtCustomClaims{},
-		SigningKey: []byte("secret"),
+		SigningKey: []byte("mmsystem"),
 		AuthScheme: "Token",
 	}))
 
@@ -37,7 +37,7 @@ func initRouter() *echo.Echo {
 
 	//User api group
 	user := e.Group("/user")
-	user.POST("", handler.CreateUser) //data-json: name, email
+	user.POST("", handler.Register) //data-json: name, email, type
 	user.GET("/:id", handler.GetUser)
 	user.PUT("/:id", handler.UpdateUser)
 	user.DELETE("/:id", handler.DeleteUser)

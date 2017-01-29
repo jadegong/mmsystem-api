@@ -10,7 +10,7 @@ type User struct {
 	Id            bson.ObjectId `bson:"_id"`
 	Email         string        `bson:"email"`
 	Password      string        `bson:"password"`
-	Type          string        `bson:"type"` //用户类型，0: root(管理admin和普通用户), 1: admin(数据录入人员), 2: user
+	Type          string        `bson:"type"` //用户类型，0: admin(管理manager和普通用户), 1: manager(数据录入人员), 2: user(普通用户)
 	Name          string        `bson:"name"`
 	Mobile        string        `bson:"mobile"`
 	CreatedAt     time.Time     `bson:"created_at"`
@@ -28,6 +28,6 @@ type UserLog struct {
 	UserId    bson.ObjectId `bson:"user_id"`
 	IpAddress bson.ObjectId `bson:"ip_address"`
 	LogTime   time.Time     `bson:"log_time"`
-	Type      unit8         `bson:"type"`
+	Type      uint8         `bson:"type"`
 	Data      interface{}   `bson:"data,omitempty"`
 }

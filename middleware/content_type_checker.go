@@ -27,9 +27,10 @@ func contentTypeCheckerSkipper(c echo.Context) bool {
 	if len(NoneJsonUrls["ALL"]) > 0 || len(NoneJsonUrls[c.Request().Method]) > 0 {
 		urls := append(NoneJsonUrls["ALL"], NoneJsonUrls[c.Request().Method]...)
 		for _, url := range urls {
-			if strings.Contains(c.Request().URL.Path, url)
-			ret = true
-			break
+			if strings.Contains(c.Request().URL.Path, url) {
+				ret = true
+				break
+			}
 		}
 	}
 	return ret

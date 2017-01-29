@@ -11,6 +11,10 @@ func initRoot() {
 		logrus.Error("Please config root user email and password!")
 		return
 	}
+	if IsEmail(Conf.RootEmail) == false {
+		logrus.Error("Invalid root user email format!")
+		return
+	}
 
 	user := &model.User{}
 	session := Session()
