@@ -8,7 +8,7 @@ import (
 
 var (
 	NoneAuthUrls map[string][]string = map[string][]string{
-		"ALL": []string{"/login", "/register", "forget", "/reset", "/captcha"},
+		"ALL": []string{"/login", "/register", "/forget", "/reset", "/captcha"},
 		"GET": []string{"/file/view"}, //TODO change to the api of material detection result document
 	}
 )
