@@ -10,7 +10,7 @@ type User struct {
 	Id            bson.ObjectId `bson:"_id"`
 	Email         string        `bson:"email"`
 	Password      string        `bson:"password"`
-	Type          string        `bson:"type"` //用户类型，0: admin(管理manager和普通用户), 1: manager(数据录入人员), 2: user(普通用户)
+	Type          uint8         `bson:"type"` //用户类型，0: admin(管理manager和普通用户), 1: manager(数据录入人员), 2: user(普通用户)
 	Name          string        `bson:"name"`
 	Mobile        string        `bson:"mobile"`
 	CreatedAt     time.Time     `bson:"created_at"`

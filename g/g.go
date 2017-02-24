@@ -13,6 +13,8 @@ var (
 
 func InitGlobal() {
 	logrus.SetFormatter(&logrus.TextFormatter{FullTimestamp: true, TimestampFormat: "2010-01-02 12:34:56.00"})
+
+	//处理panic产生的错误
 	defer func() {
 		if err := recover(); err != nil {
 			logrus.Errorf("Initialization failed: %v", err)
@@ -39,7 +41,9 @@ func InitGlobal() {
 	//TODO Initialize rpcclient
 
 	//Initialize root user
-	initRoot()
+	if errMsg := initRoot(); errMsg != "" {
+		panic(errMsg)
+	}
 
 	TempDir = os.TempDir()
 	logrus.Infof("Temp file directory: %s", TempDir)

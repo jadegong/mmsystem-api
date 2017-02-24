@@ -41,26 +41,27 @@ func Register(c echo.Context) error {
 		UpdatedAt: now,
 		IsActived: false,
 	}
+	//TODO bind func but encrypte password???
 	if err := c.Bind(u); err != nil {
 		return err
 	}
-	if u.Password == "" || strings.Contains("012", u.Type) == false {
+	if u.Password == "" || strings.Contains("012", strconv.Itoa(int(u.Type))) == false {
 		return c.JSON(http.StatusBadRequest, model.Error{Code: g.ERR_DATA_INVALID, Error: g.GetErrMsg(g.ERR_DATA_INVALID)})
 	}
 
 	if errNo := validateEmail(u.Email); errNo != g.SUCCESS {
-		return c.JSON(g.GetErrHttpStatus(errNo), model.Error{Code: errNo, g.GetErrMsg(errNo)})
+		return c.JSON(g.GetErrHttpStatus(errNo), model.Error{Code: errNo, Error: g.GetErrMsg(errNo)})
 	}
 
 	session := g.Session()
 	db := session.DB(g.Conf.DBName)
 	defer session.Close()
 
-	err = db.C(g.USER).Insert(u)
+	err := db.C(g.USER).Insert(u)
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, mode.Error{Code: g.ERR_DB_FAILED, Error: g.GetErrMsg(g.ERR_DB_FAILED)})
+		return c.JSON(http.StatusInternalServerError, model.Error{Code: g.ERR_DB_FAILED, Error: g.GetErrMsg(g.ERR_DB_FAILED)})
 	}
-	return c.JSON(http.StatusCreated, user)
+	return c.JSON(http.StatusCreated, u)
 }
 
 //Must use application/json
