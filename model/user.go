@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"gopkg.in/mgo.v2/bson"
+	"jadegong/api.mmsystem.com/g"
 )
 
 type User struct {
@@ -20,6 +21,12 @@ type User struct {
 	Avatar        bson.ObjectId `bson:"avatar,omitempty"`
 	LastLoginDate time.Time     `bson:"last_login_date"` //上一次登录时间
 	LastLoginIp   string        `bson:"last_login_ip"`   //上一次登录IP
+}
+
+//Receive a pointer to User so it can modify it.
+//Encrypt user's password
+func (u *User) SetPassword() {
+	u.Password = g.EncryptPassword(u.Password)
 }
 
 //用户日志

@@ -24,7 +24,7 @@ func IsEmail(email string) bool {
 	return reg.Match([]byte(email))
 }
 
-func EncryptePassword(password string) string {
+func EncryptPassword(password string) string {
 	c := sha512_crypt.New()
 	encryptedPassword, _ := c.Generate([]byte(password), []byte(""))
 	return encryptedPassword

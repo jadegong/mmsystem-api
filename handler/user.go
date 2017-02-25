@@ -41,7 +41,6 @@ func Register(c echo.Context) error {
 		UpdatedAt: now,
 		IsActived: false,
 	}
-	//TODO bind func but encrypte password???
 	if err := c.Bind(u); err != nil {
 		return err
 	}
@@ -57,6 +56,8 @@ func Register(c echo.Context) error {
 	db := session.DB(g.Conf.DBName)
 	defer session.Close()
 
+	//encrypt password
+	u.SetPassword()
 	err := db.C(g.USER).Insert(u)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, model.Error{Code: g.ERR_DB_FAILED, Error: g.GetErrMsg(g.ERR_DB_FAILED)})

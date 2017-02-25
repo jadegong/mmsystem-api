@@ -31,7 +31,7 @@ func initRoot() string {
 		user = &model.User{
 			Id:        bson.NewObjectId(),
 			Email:     Conf.RootEmail,
-			Password:  EncryptePassword(Conf.RootPassword),
+			Password:  EncryptPassword(Conf.RootPassword),
 			Type:      0,
 			CreatedAt: now,
 			UpdatedAt: now,
