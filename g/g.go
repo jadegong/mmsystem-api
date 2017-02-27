@@ -12,7 +12,7 @@ var (
 )
 
 func InitGlobal() {
-	logrus.SetFormatter(&logrus.TextFormatter{FullTimestamp: true, TimestampFormat: "2010-01-02 12:34:56.00"})
+	logrus.SetFormatter(&logrus.TextFormatter{FullTimestamp: true, TimestampFormat: "2006-01-02 15:04:05"})
 
 	//处理panic产生的错误
 	defer func() {
@@ -38,12 +38,15 @@ func InitGlobal() {
 	//Initialize storage
 	initStorage()
 
+	//Initialize cache
+	InitCache()
+
 	//TODO Initialize rpcclient
 
 	//Initialize root user
-	if errMsg := initRoot(); errMsg != "" {
-		panic(errMsg)
-	}
+	//if errMsg := initRoot(); errMsg != "" {
+	//	panic(errMsg)
+	//}
 
 	TempDir = os.TempDir()
 	logrus.Infof("Temp file directory: %s", TempDir)

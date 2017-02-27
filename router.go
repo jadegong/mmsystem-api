@@ -25,11 +25,8 @@ func initRouter() *echo.Echo {
 	e.Use(customMiddleware.ContentTypeCheckerMiddleware())
 
 	//token authorization
-	e.Use(middleware.JWTWithConfig(middleware.JWTConfig{
-		Skipper:    customMiddleware.TokenAuthSkipper,
-		Claims:     &handler.JwtCustomClaims{},
-		SigningKey: []byte("mmsystem"),
-		AuthScheme: "Token",
+	e.Use(customMiddleware.TokenAuthWithConfig(customMiddleware.TokenAuthConfig{
+		Skipper: customMiddleware.TokenAuthSkipper,
 	}))
 
 	e.POST("/login", handler.AdminLogin) //Admin login: form (name, email)

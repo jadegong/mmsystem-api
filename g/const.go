@@ -4,8 +4,12 @@ const (
 	DOMAIN     = "https://mmsystem.com"
 	DOMAIN_API = "https://api.mmsystem.com"
 	VERSION    = "0.0.1"
+	AUTH_REALM = "mmsystem.com"
 
 	AUTH_TOKEN_NS = "auth:" //认证token存取前缀
+
+	CACHE_REDIS  = "redis"
+	CACHE_MEMORY = "memory"
 
 	RUN_MODE_DEV     = "dev"
 	RUN_MODE_PRODUCT = "prod"

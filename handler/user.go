@@ -14,6 +14,7 @@ import (
 	jwt "github.com/dgrijalva/jwt-go"
 	"github.com/labstack/echo"
 	"jadegong/api.mmsystem.com/g"
+	"jadegong/api.mmsystem.com/middleware"
 	"jadegong/api.mmsystem.com/model"
 )
 
@@ -29,6 +30,7 @@ var (
 )
 
 func GetUsers(c echo.Context) error {
+	fmt.Printf("Remote user: %v", c.Get("remote_user"))
 	return c.JSON(http.StatusCreated, users)
 }
 
@@ -57,7 +59,7 @@ func Register(c echo.Context) error {
 	defer session.Close()
 
 	//encrypt password
-	u.SetPassword()
+	u.Password = g.EncryptPassword(u.Password)
 	err := db.C(g.USER).Insert(u)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, model.Error{Code: g.ERR_DB_FAILED, Error: g.GetErrMsg(g.ERR_DB_FAILED)})
@@ -136,22 +138,18 @@ func AdminLogin(c echo.Context) error {
 	username := c.FormValue("name")
 	password := c.FormValue("password")
 	if username == "admin" && password == "admin" {
-		claims := &JwtCustomClaims{
-			username,
-			password,
-			jwt.StandardClaims{
-				ExpiresAt: time.Now().Add(10 * time.Minute).Unix(),
-			},
-		}
-		token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
 		//generate encoded token
-		t, err := token.SignedString([]byte("secret"))
-		if err != nil {
-			return err
+		token, _ := middleware.New()
+		if g.Conf.Cache == g.CACHE_REDIS {
+			err := g.Redis.Set(g.AUTH_TOKEN_NS+middleware.Hash(token), username, g.Conf.TokenDuration).Err()
+			if err != nil {
+				return c.JSON(http.StatusInternalServerError, model.Error{Code: g.ERR_REDIS_NOT_AVAILABLE, Error: g.GetErrMsg(g.ERR_REDIS_NOT_AVAILABLE)})
+			}
+		} else {
+			g.Cache.Set(g.AUTH_TOKEN_NS+middleware.Hash(token), username, g.Conf.TokenDuration)
 		}
 		return c.JSON(http.StatusOK, map[string]string{
-			"token": t,
+			"token": token,
 		})
 	}
 	return echo.ErrUnauthorized

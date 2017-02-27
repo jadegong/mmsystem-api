@@ -15,6 +15,7 @@ const (
 	ERR_RESOURCE_NOT_FOUND  = 10007
 	ERR_RPC_FAILED          = 10008
 	ERR_THUMB_FAILED        = 10009
+	ERR_REDIS_NOT_AVAILABLE = 10010
 
 	//Register
 	ERR_REG_EMAIL_EXISTS     = 20001
@@ -45,6 +46,7 @@ var errorText = map[int]string{
 	ERR_RESOURCE_NOT_FOUND:  "资源未找到",
 	ERR_RPC_FAILED:          "内部服务调用出错",
 	ERR_THUMB_FAILED:        "文件生成缩略图失败",
+	ERR_REDIS_NOT_AVAILABLE: "系统故障:缓存服务不可用",
 
 	//Register
 	ERR_REG_EMAIL_EXISTS:     "邮箱已经存在",
@@ -74,7 +76,7 @@ func GetErrMsg(errCode int) string {
 
 func GetErrHttpStatus(errCode int) int {
 	switch errCode {
-	case ERR_RPC_FAILED, ERR_DB_FAILED:
+	case ERR_RPC_FAILED, ERR_DB_FAILED, ERR_REDIS_NOT_AVAILABLE:
 		return http.StatusInternalServerError
 	default:
 		return http.StatusBadRequest
