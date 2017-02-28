@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -24,16 +23,6 @@ type JwtCustomClaims struct {
 	jwt.StandardClaims
 }
 
-var (
-	users = map[int]*model.User{}
-	seq   = 1
-)
-
-func GetUsers(c echo.Context) error {
-	fmt.Printf("Remote user: %v", c.Get("remote_user"))
-	return c.JSON(http.StatusCreated, users)
-}
-
 //用户注册
 func Register(c echo.Context) error {
 	now := time.Now()
@@ -44,7 +33,7 @@ func Register(c echo.Context) error {
 		IsActived: false,
 	}
 	if err := c.Bind(u); err != nil {
-		return err
+		return c.JSON(http.StatusBadRequest, model.Error{Code: g.ERR_DATA_INVALID, Error: g.GetErrMsg(g.ERR_DATA_INVALID)})
 	}
 	if u.Password == "" || strings.Contains("012", strconv.Itoa(int(u.Type))) == false {
 		return c.JSON(http.StatusBadRequest, model.Error{Code: g.ERR_DATA_INVALID, Error: g.GetErrMsg(g.ERR_DATA_INVALID)})
@@ -67,43 +56,65 @@ func Register(c echo.Context) error {
 	return c.JSON(http.StatusCreated, u)
 }
 
-//Must use application/json
-func CreateUser(c echo.Context) error {
-	fmt.Printf("The header token: %s", c.Request().Header.Get("Authorization"))
-	u := &model.User{}
-	if err := c.Bind(u); err != nil {
-		return err
+func Login(c echo.Context) error {
+	var (
+		u    = &model.User{}
+		user = &model.User{}
+	)
+	err := c.Bind(u)
+	if err != nil || u.Email == "" || g.IsEmail(u.Email) == false {
+		return c.JSON(http.StatusBadRequest, model.Error{Code: g.ERR_DATA_INVALID, Error: g.GetErrMsg(g.ERR_DATA_INVALID)})
 	}
-	return c.JSON(http.StatusCreated, u)
+	session := g.Session()
+	db := session.DB(g.Conf.DBName)
+	defer session.Close()
+
+	err = db.C(g.USER).Find(bson.M{"email": u.Email}).One(user)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, model.Error{Code: g.ERR_DB_FAILED, Error: g.GetErrMsg(g.ERR_DB_FAILED)})
+	}
+	if user.IsActived != true {
+		return c.JSON(http.StatusForbidden, model.Error{Code: g.ERR_USER_NOT_VERIFIED, Error: g.GetErrMsg(g.ERR_USER_NOT_VERIFIED)})
+	}
+	if g.EncryptPassword(u.Password) != user.Password {
+		return c.JSON(http.StatusBadRequest, model.Error{Code: g.ERR_PASSWORD_INVALID, Error: g.GetErrMsg(g.ERR_PASSWORD_INVALID)})
+	}
+
+	//generate encoded token
+	token, _ := middleware.New()
+	if g.Conf.Cache == g.CACHE_REDIS {
+		err := g.Redis.Set(g.AUTH_TOKEN_NS+middleware.Hash(token), user.Id.Hex(), g.Conf.TokenDuration).Err()
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, model.Error{Code: g.ERR_REDIS_NOT_AVAILABLE, Error: g.GetErrMsg(g.ERR_REDIS_NOT_AVAILABLE)})
+		}
+	} else {
+		g.Cache.Set(g.AUTH_TOKEN_NS+middleware.Hash(token), user.Id.Hex(), g.Conf.TokenDuration)
+	}
+
+	ipAddress := c.RealIP()
+	err = db.C(g.USER).UpdateId(user.Id, bson.M{"$set": bson.M{"last_login_ip": ipAddress,
+		"$currentDate": bson.M{"last_login_at": true}}})
+
+	ret := getUserMap(user)
+	ret["token"] = token
+
+	return c.JSON(http.StatusOK, ret)
 }
 
+// Get one user's info
 func GetUser(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil || id >= seq {
-		return fmt.Errorf("Invalid data id: %v", c.Param("id"))
-	}
-	u := users[id]
-	return c.JSON(http.StatusCreated, u)
-}
+	user := model.User{}
+	userID := c.Get("remote_user")
 
-func UpdateUser(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
-	u := new(model.User)
-	err = c.Bind(u)
-	if err != nil || id >= seq {
-		return fmt.Errorf("Invalid data id: %v", c.Param("id"))
-	}
-	users[id].Name = u.Name
-	return c.JSON(http.StatusOK, users[id])
-}
+	session := g.Session()
+	db := session.DB(g.Conf.DBName)
+	defer session.Close()
 
-func DeleteUser(c echo.Context) error {
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil || id >= seq {
-		return fmt.Errorf("Invalid data id: %v", c.Param("id"))
+	err := db.C(g.USER).FindId(bson.ObjectIdHex(userID)).One(&user)
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, model.Error{Code: g.ERR_DB_FAILED, Error: g.GetErrMsg(g.ERR_DB_FAILED)})
 	}
-	delete(users, id)
-	return c.NoContent(http.StatusNoContent)
+	return c.JSON(http.StatusCreated, user)
 }
 
 //upload file avatar
@@ -172,4 +183,28 @@ func validateEmail(email string) int {
 		return g.ERR_REG_EMAIL_EXISTS
 	}
 	return g.SUCCESS
+}
+
+func getUserMap(user *model.User) map[string]interface{} {
+	userName := user.Name
+	if userName == "" {
+		userName = user.Email
+	}
+
+	ret := map[string]interface{}{
+		"id":          user.Id.Hex(),
+		"email":       user.Email,
+		"type":        user.Type,
+		"name":        user.Name,
+		"mobile":      user.Mobile,
+		"createdAt":   user.CreatedAt,
+		"updatedAt":   user.UpdatedAt,
+		"isActived":   user.IsActived,
+		"activedAt":   user.ActivedAt,
+		"avatar":      user.Avatar.Hex(),
+		"lastLoginAt": user.LastLoginAt,
+		"lastLoginIp": user.LastLoginIp,
+	}
+
+	return ret
 }

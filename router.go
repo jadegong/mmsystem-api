@@ -29,15 +29,12 @@ func initRouter() *echo.Echo {
 		Skipper: customMiddleware.TokenAuthSkipper,
 	}))
 
-	e.POST("/login", handler.AdminLogin) //Admin login: form (name, email)
-	e.GET("/users", handler.GetUsers)
+	e.POST("/register", handler.Register) //data-json: name, email, type
+	e.POST("/login", handler.Login)
 
 	//User api group
 	user := e.Group("/user")
-	user.POST("", handler.Register) //data-json: name, email, type
-	user.GET("/:id", handler.GetUser)
-	user.PUT("/:id", handler.UpdateUser)
-	user.DELETE("/:id", handler.DeleteUser)
+	user.GET("", handler.GetUser)
 	user.POST("/avatar", handler.SaveAvatar) //With upload file
 	return e
 }

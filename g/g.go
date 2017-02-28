@@ -43,7 +43,7 @@ func InitGlobal() {
 
 	//TODO Initialize rpcclient
 
-	//Initialize root user
+	//TODO Initialize root user
 	//if errMsg := initRoot(); errMsg != "" {
 	//	panic(errMsg)
 	//}

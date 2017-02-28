@@ -37,7 +37,6 @@ func contentTypeCheckerSkipper(c echo.Context) bool {
 }
 
 func ContentTypeCheckerMiddleware() echo.MiddlewareFunc {
-	// todo
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			if DefaultContentTypeCheckerConfig.Skipper(c) {
