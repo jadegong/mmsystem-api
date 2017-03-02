@@ -16,6 +16,7 @@ const (
 	ERR_RPC_FAILED          = 10008
 	ERR_THUMB_FAILED        = 10009
 	ERR_REDIS_NOT_AVAILABLE = 10010
+	ERR_PERMISSION_DENIED   = 10011
 
 	//Register
 	ERR_REG_EMAIL_EXISTS     = 20001
@@ -47,6 +48,7 @@ var errorText = map[int]string{
 	ERR_RPC_FAILED:          "内部服务调用出错",
 	ERR_THUMB_FAILED:        "文件生成缩略图失败",
 	ERR_REDIS_NOT_AVAILABLE: "系统故障:缓存服务不可用",
+	ERR_PERMISSION_DENIED:   "操作被拒绝",
 
 	//Register
 	ERR_REG_EMAIL_EXISTS:     "邮箱已经存在",

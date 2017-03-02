@@ -27,10 +27,11 @@ type JwtCustomClaims struct {
 func Register(c echo.Context) error {
 	now := time.Now()
 	u := &model.User{
-		Id:        bson.NewObjectId(),
-		CreatedAt: now,
-		UpdatedAt: now,
-		IsActived: false,
+		Id:         bson.NewObjectId(),
+		CreatedAt:  now,
+		UpdatedAt:  now,
+		IsActived:  false,
+		IsRejected: false,
 	}
 	if err := c.Bind(u); err != nil {
 		return c.JSON(http.StatusBadRequest, model.Error{Code: g.ERR_DATA_INVALID, Error: g.GetErrMsg(g.ERR_DATA_INVALID)})
@@ -60,6 +61,7 @@ func Login(c echo.Context) error {
 	var (
 		u    = &model.User{}
 		user = &model.User{}
+		ret  map[string]interface{}
 	)
 	err := c.Bind(u)
 	if err != nil || u.Email == "" || g.IsEmail(u.Email) == false {
@@ -95,7 +97,8 @@ func Login(c echo.Context) error {
 	err = db.C(g.USER).UpdateId(user.Id, bson.M{"$set": bson.M{"last_login_ip": ipAddress,
 		"$currentDate": bson.M{"last_login_at": true}}})
 
-	ret := getUserMap(user)
+	userMap := getUserMap(user)
+	ret["user"] = userMap
 	ret["token"] = token
 
 	return c.JSON(http.StatusOK, ret)
@@ -114,7 +117,7 @@ func GetUser(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, model.Error{Code: g.ERR_DB_FAILED, Error: g.GetErrMsg(g.ERR_DB_FAILED)})
 	}
-	return c.JSON(http.StatusCreated, user)
+	return c.JSON(http.StatusCreated, getUserMap(user))
 }
 
 //upload file avatar
@@ -201,6 +204,8 @@ func getUserMap(user *model.User) map[string]interface{} {
 		"updatedAt":   user.UpdatedAt,
 		"isActived":   user.IsActived,
 		"activedAt":   user.ActivedAt,
+		"isRejected":  user.IsRejected,
+		"rejectedAt":  user.RejectedAt,
 		"avatar":      user.Avatar.Hex(),
 		"lastLoginAt": user.LastLoginAt,
 		"lastLoginIp": user.LastLoginIp,

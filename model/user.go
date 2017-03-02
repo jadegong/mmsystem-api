@@ -14,9 +14,11 @@ type User struct {
 	Name        string        `bson:"name" json:"name"`
 	Mobile      string        `bson:"mobile" json:"mobile"`
 	CreatedAt   time.Time     `bson:"created_at" json:"createdAt"`
-	UpdatedAt   time.Time     `bson:"updated_at" json:"updatedAt"` //最后更新时间
-	IsActived   bool          `bson:"is_actived" json:"isActived"` //是否激活
-	ActivedAt   time.Time     `bson:"actived_at" json:"activedAt"` //激活时间
+	UpdatedAt   time.Time     `bson:"updated_at" json:"updatedAt"`   //最后更新时间
+	IsActived   bool          `bson:"is_actived" json:"isActived"`   //是否激活
+	ActivedAt   time.Time     `bson:"actived_at" json:"activedAt"`   //激活时间
+	IsRejected  bool          `bson:"is_rejected" json:"isRejected"` //是否被拒绝
+	RejectedAt  time.Time     `bson:"rejected_at" json:"rejectedAt"` //拒绝时间
 	Avatar      bson.ObjectId `bson:"avatar,omitempty" json:"avatar"`
 	LastLoginAt time.Time     `bson:"last_login_at" json:"lastLoginAt"` //上一次登录时间
 	LastLoginIp string        `bson:"last_login_ip" json:"lastLoginIp"` //上一次登录IP

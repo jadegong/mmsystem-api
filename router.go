@@ -35,6 +35,8 @@ func initRouter() *echo.Echo {
 	//User api group
 	user := e.Group("/user")
 	user.GET("", handler.GetUser)
+	user.GET("/notes", handler.GetRegisterNotes)
+	user.PUT("/verify/:id", handler.VerifyUser)
 	user.POST("/avatar", handler.SaveAvatar) //With upload file
 	return e
 }
